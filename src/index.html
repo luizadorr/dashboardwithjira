@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Dashboard de Projetos com Jira</title>
+
+  <link rel="stylesheet" href="assets/vendors/feather/feather.css">
+  <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="assets/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="assets/vendors/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="assets/vendors/typicons/typicons.css">
+  <link rel="stylesheet" href="assets/vendors/simple-line-icons/css/simple-line-icons.css">
+  <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- COLOQUE SUA LOGO AQUI -->
+  <link rel="shortcut icon" href="" />
+
+  <style>
+    .chart-container {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+    }
+
+    .table td,
+    .table th {
+      vertical-align: middle;
+    }
+
+    .badge-soft {
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .risk-item {
+      border-left: 4px solid #dc3545;
+      background: #fff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.04);
+    }
+
+    .risk-item h6,
+    .risk-item p {
+      margin-bottom: 4px;
+    }
+
+    .section-subtitle {
+      color: #6c757d;
+      font-size: 13px;
+    }
+
+    .empty-state {
+      padding: 32px 16px;
+      text-align: center;
+      color: #6c757d;
+    }
+  </style>
+</head>
+
+<body class="with-welcome-text">
+  <div class="container-scroller">
+
+    <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+        <div class="me-3">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+            <span class="icon-menu"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="navbar-menu-wrapper d-flex align-items-top">
+        <ul class="navbar-nav">
+          <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+            <!-- SUA LOGO -->
+            <img src="" alt="" style="width: 120px;">
+          </li>
+        </ul>
+
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item d-none d-lg-block">
+            <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
+              <span class="input-group-addon input-group-prepend border-right">
+                <span class="icon-calendar input-group-text calendar-icon"></span>
+              </span>
+              <input type="text" class="form-control">
+            </div>
+          </li>
+
+          <li class="nav-item">
+            <form class="search-form" action="javascript:void(0);">
+              <i class="icon-search"></i>
+              <input type="search" class="form-control" placeholder="Buscar issue, responsável ou área" id="searchInput">
+            </form>
+          </li>
+
+          <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+            <a class="nav-link" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+              <!-- IMAGEM DE PERFIL -->
+              <img class="img-xs rounded-circle" src="" style="width: 50px; height: 50px;" alt="Profile image">
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown">
+              <div class="dropdown-header text-center">
+                <!-- IMAGEM DE PERFIL -->
+                <img class="img-md rounded-circle" src="" style="width: 50px; height: 50px;" alt="Profile image">
+                <p class="mb-1 mt-3 fw-semibold">SEU NOME</p>
+                <p class="fw-light text-muted mb-0">Dashboard de Projetos</p>
+              </div>
+              <span class="dropdown-item"> <a href="https://wilsonsonsprojetos.atlassian.net/jira/software/projects/PEX/boards/34">
+                <i class="dropdown-item-icon mdi mdi-view-dashboard text-primary me-2"></i> Monitoramento Jira</a> 
+              </span>
+            </div>
+          </li>
+        </ul>
+
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+          <span class="mdi mdi-menu"></span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="container-fluid page-body-wrapper">
+
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">
+              <i class="mdi mdi-grid-large menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+
+          <li class="nav-item nav-category">Projeto</li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#kpis-section">
+              <i class="menu-icon mdi mdi-chart-box"></i>
+              <span class="menu-title">Indicadores</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#status-section">
+              <i class="menu-icon mdi mdi-chart-bar"></i>
+              <span class="menu-title">Status</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#issues-section">
+              <i class="menu-icon mdi mdi-format-list-bulleted"></i>
+              <span class="menu-title">Tasks</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#risks-section">
+              <i class="menu-icon mdi mdi-alert-circle-outline"></i>
+              <span class="menu-title">Riscos</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="home-tab">
+                <div class="d-sm-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                  <div>
+                    <!-- NOME DO PROJETO -->
+                    <h3 class="mb-1" style="font-weight: 900;">Dashboard do Projeto </h3>
+                  </div>
+                </div>
+
+                <div class="row" id="kpis-section">
+                  <div class="col-sm-12">
+                    <div class="statistics-details d-flex align-items-center justify-content-between flex-wrap">
+                      <div>
+                        <p class="statistics-title">Total de Tasks</p>
+                        <h3 class="rate-percentage" id="kpi-total">0</h3>
+                      </div>
+                      <div>
+                        <p class="statistics-title">Em Execução</p>
+                        <h3 class="rate-percentage" id="kpi-progress">0</h3>
+                      </div>
+                      <div>
+                        <p class="statistics-title">Concluídas</p>
+                        <h3 class="rate-percentage" id="kpi-done">0</h3>
+                      </div>
+                      <div class="d-none d-md-block">
+                        <p class="statistics-title">Bloqueadas</p>
+                        <h3 class="rate-percentage" id="kpi-blocked">0</h3>
+                      </div>
+                      <div class="d-none d-md-block">
+                        <p class="statistics-title">Atrasadas</p>
+                        <h3 class="rate-percentage" id="kpi-overdue">0</h3>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mt-4">
+                  <div class="col-lg-8 d-flex flex-column">
+                    <div class="row flex-grow" id="status-section">
+                      <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                              <div>
+                                <h4 class="card-title card-title-dash">Visão Geral do Projeto</h4>
+                                <p class="card-subtitle card-subtitle-dash">
+                                  Distribuição das tasks por status no Jira
+                                </p>
+                              </div>
+                            </div>
+
+                            <div class="chart-container mt-4">
+                              <canvas id="jiraStatusChart"></canvas>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row flex-grow" id="issues-section">
+                      <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                              <div>
+                                <h4 class="card-title card-title-dash">Detalhes de cada Task</h4>
+                                <p class="card-subtitle card-subtitle-dash">
+                                  Tarefas, responsáveis, áreas e status do projeto
+                                </p>
+                              </div>
+                              <div class="d-flex align-items-center">
+                                <input type="search" id="issuesSearchInput" class="form-control form-control-sm" placeholder="Filtrar" aria-label="Filtrar" />
+                              </div>
+                              <div>
+                                <span class="badge badge-opacity-primary" id="issues-count-badge">0 registros</span>
+                              </div>
+                            </div>
+
+                            <div class="table-responsive mt-4">
+                              <table class="table select-table">
+                                <thead>
+                                  <tr>
+                                    <th>Task</th>
+                                    <th>Responsável</th>
+                                    <th>Épico</th>
+                                    <th>Progresso</th>
+                                    <th>Status</th>
+                                  </tr>
+                                </thead>
+                                <tbody id="issues-table-body">
+                                  <tr>
+                                    <td colspan="5" class="empty-state">Carregando dados do Jira...</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="col-lg-4 d-flex flex-column">
+
+                    <div class="row flex-grow">
+                      <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                              <div>
+                                <h4 class="card-title card-title-dash">Tarefas por Prioridade</h4>
+                                <p class="section-subtitle mb-0">Distribuição por criticidade</p>
+                              </div>
+                            </div>
+                            <div>
+                              <canvas class="my-auto" id="jiraPriorityChart"></canvas>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row flex-grow" id="cronograma-section">
+                      <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                              <div>
+                                <h4 class="card-title card-title-dash">Cronograma do Projeto</h4>
+                                <p class="section-subtitle mb-0">Distribuição das entregas por prazo</p>
+                              </div>
+                            </div>
+                            <div class="chart-container">
+                              <canvas id="cronogramaChart"></canvas>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row flex-grow">
+                      <div class="col-12 grid-margin stretch-card">
+                        <div class="card card-rounded">
+                          <div class="card-body">
+                            <h4 class="card-title card-title-dash">Resumo Executivo</h4>
+                            <p class="section-subtitle">
+                              Painel para acompanhamento do projeto com base nos dados estruturados no Jira.
+                            </p>
+
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item px-0 d-flex justify-content-between">
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+              Dashboard por Luiza.
+            </span>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- plugins:js -->
+  <script src="assets/vendors/js/vendor.bundle.base.js"></script>
+  <script src="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+
+  <!-- Plugin js for this page -->
+  <script src="assets/vendors/chart.js/chart.umd.js"></script>
+  <script src="assets/vendors/progressbar.js/progressbar.min.js"></script>
+
+  <!-- inject:js -->
+  <script src="assets/js/off-canvas.js"></script>
+  <script src="assets/js/template.js"></script>
+  <script src="assets/js/settings.js"></script>
+  <script src="assets/js/hoverable-collapse.js"></script>
+  <script src="assets/js/todolist.js"></script>
+
+  <script>
+  let jiraStatusChartInstance = null;
+  let jiraPriorityChartInstance = null;
+  let allIssues = [];
+  let cronogramaChartInstance = null;
+
+  function renderKpis(kpis) {
+    document.getElementById('kpi-total').textContent = kpis.total ?? 0;
+    document.getElementById('kpi-progress').textContent = kpis.in_progress ?? 0;
+    document.getElementById('kpi-done').textContent = kpis.done ?? 0;
+    document.getElementById('kpi-blocked').textContent = kpis.blocked ?? 0;
+    document.getElementById('kpi-overdue').textContent = kpis.overdue ?? 0;
+
+    const summaryList = document.querySelector('.list-group.list-group-flush');
+    if (summaryList) {
+      summaryList.innerHTML = `
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span>Projeto</span>
+          <strong>Modernização do Cais</strong>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span>Fonte de dados</span>
+          <strong>Jira Cloud API</strong>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span>Épicos</span>
+          <strong>${kpis.epics ?? 0}</strong>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span>Tasks</span>
+          <strong>${kpis.tasks ?? 0}</strong>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span>Objetivo</span>
+          <strong>Governança e execução</strong>
+        </li>
+      `;
+    }
+  }
+
+  function getProgressColor(progress) {
+    if (progress >= 100) return 'bg-success';
+    if (progress >= 60) return 'bg-warning';
+    if (progress >= 30) return 'bg-info';
+    return 'bg-danger';
+  }
+
+  function renderIssuesTable(issues) {
+    const tbody = document.getElementById('issues-table-body');
+    const counter = document.getElementById('issues-count-badge');
+
+    if (!tbody) return;
+
+    if (counter) {
+      counter.textContent = `${issues.length} registros`;
+    }
+
+    tbody.innerHTML = '';
+
+    if (!issues.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty-state">Nenhuma issue encontrada.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    issues.forEach(issue => {
+      const epic = issue.epic || 'Sem épico';
+      const progress = issue.progress ?? 0;
+      const progressColor = getProgressColor(progress);
+
+      const row = `
+        <tr>
+          <td>
+            <div>
+              <h6 class="mb-1">${issue.summary || '-'}</h6>
+              <p class="mb-0 text-muted small">${issue.key}</p>
+            </div>
+          </td>
+          <td>
+            <h6 class="mb-1">${issue.assignee || 'Não atribuído'}</h6>
+            <p class="mb-0 text-muted small">${issue.issue_type || '-'}</p>
+          </td>
+          <td>
+            <h6 class="mb-1">${epic}</h6>
+            <p class="mb-0 text-muted small">${issue.priority || '-'}</p>
+          </td>
+          <td style="min-width: 180px;">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                <p class="text-success mb-0">${progress}%</p>
+                <p class="mb-0">${issue.due_date ?? '-'}</p>
+              </div>
+              <div class="progress progress-md">
+                <div
+                  class="progress-bar ${progressColor}"
+                  role="progressbar"
+                  style="width: ${progress}%"
+                  aria-valuenow="${progress}"
+                  aria-valuemin="0"
+                  aria-valuemax="100">
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="badge badge-opacity-${issue.status_badge || 'secondary'}">${issue.status || '-'}</div>
+          </td>
+        </tr>
+      `;
+
+      tbody.insertAdjacentHTML('beforeend', row);
+    });
+  }
+
+  function renderStatusChart(chartData) {
+    const ctx = document.getElementById('jiraStatusChart');
+    if (!ctx) return;
+
+    if (jiraStatusChartInstance) {
+      jiraStatusChartInstance.destroy();
+    }
+
+    jiraStatusChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartData.labels || [],
+        datasets: [{
+          label: 'Issues',
+          data: chartData.values || [],
+          borderWidth: 1,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function renderPriorityChart(chartData) {
+    const ctx = document.getElementById('jiraPriorityChart');
+    if (!ctx) return;
+
+    if (jiraPriorityChartInstance) {
+      jiraPriorityChartInstance.destroy();
+    }
+
+    jiraPriorityChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: chartData.labels || [],
+        datasets: [{
+          data: chartData.values || [],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  }
+
+  function renderCronogramaChart(chartData) {
+  const ctx = document.getElementById('cronogramaChart');
+  if (!ctx) return;
+
+  if (cronogramaChartInstance) {
+    cronogramaChartInstance.destroy();
+  }
+
+  cronogramaChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: chartData.labels || [],
+      datasets: [{
+        label: 'Tarefas por prazo',
+        data: chartData.values || [],
+        borderWidth: 1,
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0
+          }
+        },
+        x: {
+          ticks: {
+            maxRotation: 45,
+            minRotation: 45
+          }
+        }
+      }
+    }
+  });
+}
+
+  function filterIssues(term) {
+    const value = term.trim().toLowerCase();
+
+    if (!value) {
+      renderIssuesTable(allIssues);
+      return;
+    }
+
+    const filtered = allIssues.filter(issue => {
+      const haystack = [
+        issue.key,
+        issue.summary,
+        issue.assignee,
+        issue.status,
+        issue.priority,
+        issue.epic,
+        issue.issue_type
+      ]
+      .join(' ')
+      .toLowerCase();
+
+      return haystack.includes(value);
+    });
+
+    renderIssuesTable(filtered);
+  }
+
+  async function loadDashboard() {
+    try {
+      const response = await fetch('http://localhost/bootstrapdash/backend/get_dashboard_data.php');
+      const data = await response.json();
+
+      if (!data.success) {
+        console.error(data.message || 'Erro ao carregar dashboard.');
+
+        const tbody = document.getElementById('issues-table-body');
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty-state">Erro ao carregar dados do Jira.</td>
+            </tr>
+          `;
+        }
+
+        const riskList = document.getElementById('risk-list');
+        if (riskList) {
+          riskList.innerHTML = `<div class="empty-state">Erro ao carregar itens críticos.</div>`;
+        }
+
+        return;
+      }
+
+      allIssues = data.issues || [];
+
+      renderKpis(data.kpis || {});
+      renderIssuesTable(allIssues);
+      renderStatusChart(data.status_chart || { labels: [], values: [] });
+      renderPriorityChart(data.priority_chart || { labels: [], values: [] });
+      renderCronogramaChart(data.schedule_chart || { labels: [], values: [] });
+
+    } catch (error) {
+      console.error('Erro ao carregar dados do Jira:', error);
+
+      const tbody = document.getElementById('issues-table-body');
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty-state">Falha na comunicação com o backend.</td>
+          </tr>
+        `;
+      }
+
+      const riskList = document.getElementById('risk-list');
+      if (riskList) {
+        riskList.innerHTML = `<div class="empty-state">Falha na comunicação com o backend.</div>`;
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadDashboard();
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        filterIssues(e.target.value);
+      });
+    }
+
+    const issuesSearchInput = document.getElementById('issuesSearchInput');
+    if (issuesSearchInput) {
+      issuesSearchInput.addEventListener('input', (e) => {
+        filterIssues(e.target.value);
+      });
+    }
+  });
+</script>
+</body>
+</html>
